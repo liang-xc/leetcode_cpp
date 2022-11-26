@@ -257,19 +257,18 @@ bool isBalanced(TreeNode* root) {
   return getHeight(root) != -1;
 }
 
-//TODO
 //257. Binary Tree Paths
 void recordTraversal(TreeNode* curr, std::string path, std::vector<std::string>& path_vec) {
   path += std::to_string(curr->val);
   if (curr->left == nullptr && curr->right == nullptr) {
     path_vec.push_back(path);
     return;
-  } else if (curr->left != nullptr) {
-    path += "->";
-    recordTraversal(curr->left, path, path_vec);
-  } else if (curr->right != nullptr) {
-    path += "->";
-    recordTraversal(curr->right, path, path_vec);
+  } 
+  if (curr->left != nullptr) {
+    recordTraversal(curr->left, path + "->", path_vec);
+  } 
+  if (curr->right != nullptr) {
+    recordTraversal(curr->right, path + "->", path_vec);
   }
 }
 
@@ -279,4 +278,17 @@ std::vector<std::string> binaryTreePaths(TreeNode* root) {
   if (root == nullptr) return result;
   recordTraversal(root, path, result);
   return result;
+}
+
+//404. Sum of Left Leaves
+int sumOfLeftLeaves(TreeNode* root) {
+  if (root == nullptr) return 0;
+  if (root->left == nullptr && root->right == nullptr) return 0;
+  //postorder
+  int l = sumOfLeftLeaves(root->left);
+  if (root->left != nullptr && root->left->left == nullptr && root->left->right == nullptr) {
+    l = root->left->val;
+  }
+  int r = sumOfLeftLeaves(root->right);
+  return l + r;
 }
