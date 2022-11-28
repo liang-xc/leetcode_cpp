@@ -292,3 +292,70 @@ int sumOfLeftLeaves(TreeNode* root) {
   int r = sumOfLeftLeaves(root->right);
   return l + r;
 }
+
+//513. Find Bottom Left Tree Value
+int findBottomLeftValue(TreeNode* root) {
+  std::queue<TreeNode*> q;
+  if (root != nullptr) q.push(root);
+  int result = 0;
+  while (!q.empty()) {
+    std::size_t n = q.size();
+    for (std::size_t i = 0; i < n; ++i) {
+      TreeNode* node = q.front();
+      q.pop();
+      if (i == 0) result = node->val;
+      if (node->left) q.push(node->left);
+      if (node->right) q.push(node->right);
+    }
+  }
+  return result;
+}
+
+//112. Path Sum
+bool hasPathSum(TreeNode* root, int targetSum) {
+  if (root == nullptr) return false;
+  if (root->left == nullptr && root->right == nullptr && targetSum == root->val) {
+    return true;
+  }
+  return hasPathSum(root->left, targetSum - root->val) || hasPathSum(root->right, targetSum - root->val);
+}
+
+//106. Construct Binary Tree from Inorder and Postorder Traversal
+TreeNode* treebuilder(std::vector<int>& inorder, 
+    std::size_t inorder_start,
+    std::size_t inorder_end,
+    std::vector<int>& postorder,
+    std::size_t postorder_start,
+    std::size_t postorder_end) {
+  if (postorder_start == postorder_end) return nullptr;
+
+  TreeNode* root = new TreeNode(postorder[postorder_end - 1]);
+  if (postorder_end - postorder_start == 1) return root;
+
+  std::size_t delimiter = inorder_start;
+  while (delimiter < inorder_end) {
+    if (inorder[delimiter] == root->val) break;
+    ++delimiter;
+  }
+  
+  std::size_t left_inorder_start = inorder_start;
+  std::size_t left_inorder_end = delimiter;
+  std::size_t right_inorder_start = delimiter + 1;
+  std::size_t right_inorder_end = inorder_end;
+
+  std::size_t left_postorder_start = postorder_start;
+  std::size_t left_postorder_end = postorder_start + delimiter - inorder_start;
+  std::size_t right_postorder_start = postorder_start + delimiter - inorder_start;
+  std::size_t right_postorder_end = postorder_end - 1;
+
+  root->left = treebuilder(inorder, left_inorder_start, left_inorder_end, postorder, left_postorder_start, left_postorder_end);
+  root->right = treebuilder(inorder, right_inorder_start, right_inorder_end, postorder, right_postorder_start, right_postorder_end);
+
+  return root;
+}
+
+TreeNode* buildTree(std::vector<int>& inorder, std::vector<int>& postorder) {
+  if (inorder.size() == 0 || postorder.size() == 0) return nullptr;
+  return treebuilder(inorder, 0, inorder.size(), postorder, 0, postorder.size());
+}
+
