@@ -359,3 +359,82 @@ TreeNode* buildTree(std::vector<int>& inorder, std::vector<int>& postorder) {
   return treebuilder(inorder, 0, inorder.size(), postorder, 0, postorder.size());
 }
 
+//654. Maximum Binary Tree
+TreeNode* construct_654(std::vector<int>& nums, std::size_t left, std::size_t right) {
+  if (left >= right) return nullptr;
+
+  std::size_t max_index = left;
+  for (std::size_t i = left + 1; i < right; ++i) {
+    if (nums[i] > nums[max_index]) max_index = i;
+  }
+  TreeNode* root = new TreeNode(nums[max_index]);
+  root->left = construct_654(nums, left, max_index);
+  root->right = construct_654(nums, max_index + 1, right);
+
+  return root;
+}
+
+TreeNode* constructMaximumBinaryTree(std::vector<int>& nums) {
+  return construct_654(nums, 0, nums.size());
+}
+
+//617. Merge Two Binary Trees
+TreeNode* mergeTrees(TreeNode* root1, TreeNode* root2) {
+  if (root1 == nullptr) return root2;
+  if (root2 == nullptr) return root1;
+
+  root1->val += root2->val;
+  root1->left = mergeTrees(root1->left, root2->left);
+  root1->right = mergeTrees(root1->right, root2->right);
+  return root1;
+}
+
+//700. Search in a Binary Search Tree
+TreeNode* searchBST(TreeNode* root, int val) {
+  if (root == nullptr || root->val == val) return root;
+  if (root->val > val) return searchBST(root->left, val);
+  if (root->val < val) return searchBST(root->right, val);
+  return nullptr;
+}
+
+//98. Validate Binary Search Tree
+TreeNode* pre_98 = nullptr;
+bool isValidBST(TreeNode* root) {
+  if (root == nullptr) return true;
+  bool left = isValidBST(root->left);
+  if (pre_98 != nullptr && pre_98->val >= root->val) return false;
+  pre_98 = root;
+  bool right = isValidBST(root->right);
+  return left && right;
+}
+
+//530. Minimum Absolute Difference in BST
+class Solution_530{
+private:
+  int result = INT16_MAX;
+  TreeNode* pre_530 = nullptr;
+  void traversal_530(TreeNode* root) {
+    if (root == nullptr) return;
+    traversal_530(root->left);
+    if (pre_530 != nullptr) {
+      result = std::min(result, root->val - pre_530->val);
+    }
+    pre_530 = root;
+    traversal_530(root->right);
+  }
+public:
+  int getMinimumDifference(TreeNode* root) {
+    traversal_530(root);
+    return result;
+  }
+};
+
+//236. Lowest Common Ancestor of a Binary Tree
+TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+  if (root == nullptr || root == p || root == q) return root;
+  TreeNode* left = lowestCommonAncestor(root->left, p, q);
+  TreeNode* right = lowestCommonAncestor(root->right, p, q);
+  if (left != nullptr && right != nullptr) return root;
+  if (left == nullptr) return right;
+  return left;
+}
