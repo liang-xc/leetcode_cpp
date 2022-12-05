@@ -438,3 +438,56 @@ TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
   if (left == nullptr) return right;
   return left;
 }
+
+//701. Insert into a Binary Search Tree
+TreeNode* insertIntoBST(TreeNode* root, int val) {
+  if (root == nullptr) {
+    TreeNode* node = new TreeNode(val);
+    return node;
+  }
+  if (root->val < val) root->right = insertIntoBST(root->right, val);
+  if (root->val > val) root->left = insertIntoBST(root->left, val);
+  return root;
+}
+
+//450. Delete Node in a BST
+TreeNode* deleteNode(TreeNode* root, int key) {
+  if (root == nullptr) return root;
+  if (key < root->val) root->left = deleteNode(root->left, key);
+  if (key > root->val) root->right = deleteNode(root->right, key);
+
+  if (root->val == key) {
+    if (root->left == nullptr && root->right == nullptr) {
+      delete root;
+      return nullptr;
+    } else if (root->left == nullptr) {
+      auto rNode = root->right;
+      delete root;
+      return rNode;
+    } else if (root->right == nullptr) {
+      auto lNode = root->left;
+      delete root;
+      return lNode;
+    } else {
+      TreeNode* curr = root->right;
+      while(curr->left != nullptr) {
+        curr = curr->left;
+      }
+      curr->left = root->left;
+      TreeNode* rNode = root->right;
+      delete root;
+      return rNode;
+    }
+  }
+  return root;
+}
+
+//669. Trim a Binary Search Tree
+TreeNode* trimBST(TreeNode* root, int low, int high) {
+  if (root == nullptr) return nullptr;
+  if (root->val < low) return trimBST(root->right, low, high);
+  if (root->val > high) return trimBST(root->left, low, high);
+  root->left = trimBST(root->left, low, high);
+  root->right = trimBST(root->right, low, high);
+  return root;
+}
