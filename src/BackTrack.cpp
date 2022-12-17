@@ -84,3 +84,39 @@ std::vector<std::vector<int>> combinationSum(std::vector<int>& candidates, int t
   backtrack_39(candidates, target, 0, result, comb);
   return result;
 }
+
+//131. Palindrome Partitioning
+bool isPalindrome(const std::string& s, int start, int end) {
+  for (std::size_t i = start, j = end; i < j; ++i, --j) {
+    if (s[i] != s[j]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void backtracking_131 (const std::string& s, int startIndex,
+                       std::vector<std::vector<std::string>>& result,
+                       std::vector<std::string>& path) {
+  if (startIndex >= s.size()) {
+    result.push_back(path);
+    return;
+  }
+
+  for (std::size_t i = startIndex; i < s.size(); ++i) {
+    if (isPalindrome(s, startIndex, i)) {
+      std::string str = s.substr(startIndex, i - startIndex + 1);
+      path.push_back(str);
+    } else {
+      continue;
+    }
+    backtracking_131(s, i + 1, result, path);
+    path.pop_back();
+  }
+}
+std::vector<std::vector<std::string>> partition(std::string s) {
+  std::vector<std::vector<std::string>> result;
+  std::vector<std::string> path;
+  backtracking_131(s, 0, result, path);
+  return result;
+}
